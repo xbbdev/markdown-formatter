@@ -1,0 +1,32 @@
+{
+  "name": "markdown-to-pdf",
+  "version": "1.0.0",
+  "description": "Professional Markdown to PDF converter with Web UI, Puppeteer, Syntax Highlighting, and Mermaid diagrams",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "ui": "node server.js",
+    "cli": "node index.js"
+  },
+  "keywords": [
+    "markdown",
+    "pdf",
+    "puppeteer",
+    "mermaid",
+    "highlightjs",
+    "converter",
+    "web-ui",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.3.0",
+    "highlight.js": "^11.11.1",
+    "marked": "^18.0.5",
+    "multer": "^2.5.0",
+    "puppeteer": "^25.3.0"
+  }
+}

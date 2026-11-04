@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown to PDF Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css" id="hljs-theme-link">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-light">
+  <!-- Main Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="app-logo">
+        <div class="logo-icon">📄</div>
+        <div class="logo-text">
+          <span class="logo-title">Markdown <span class="accent-text">to PDF</span></span>
+          <span class="logo-badge">Pro Studio</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="doc-meta-input">
+        <label for="doc-filename">Hujjat nomi:</label>
+        <input type="text" id="doc-filename" value="hujjat" placeholder="fayl-nomi">
+        <span class="ext-label">.pdf</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button id="btn-load-sample" class="btn btn-secondary" title="README.md namunaviy hujjatini yuklash">
+        <span class="btn-icon">💡</span> Namuna
+      </button>
+      <button id="btn-history" class="btn btn-secondary" title="Oldingi yaratilgan PDF-lar arxivi">
+        <span class="btn-icon">📚</span> Tarix (<span id="history-count">0</span>)
+      </button>
+      <button id="btn-clear" class="btn btn-ghost" title="Matnni tozalash">
+        <span class="btn-icon">🗑️</span> Tozalash
+      </button>
+      <button id="btn-generate" class="btn btn-primary pulse">
+        <span class="btn-icon">🚀</span> PDF Yuklab Olish
+      </button>
+    </div>
+  </header>
+
+  <!-- Options Bar -->
+  <div class="options-bar">
+    <div class="option-group">
+      <label for="opt-format">Format:</label>
+      <select id="opt-format">
+        <option value="A4" selected>A4 (Standart)</option>
+        <option value="A3">A3 (Katta)</option>
+        <option value="Letter">Letter</option>
+        <option value="Legal">Legal</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label for="opt-orientation">Yo'nalish:</label>
+      <select id="opt-orientation">
+        <option value="portrait" selected>Portret (Tik)</option>
+        <option value="landscape">Albom (Yotiq)</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label for="opt-margin">Hoshiyalar:</label>
+      <select id="opt-margin">
+        <option value="normal" selected>Normal (20mm)</option>
+        <option value="compact">Kichik (10mm)</option>
+        <option value="wide">Keng (30mm)</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label for="opt-theme">Dizayn mavzusi:</label>
+      <select id="opt-theme">
+        <option value="github-light" selected>GitHub Oq (Tavsiya)</option>
+        <option value="github-dark">GitHub Qorong'i</option>
+      </select>
+    </div>
+
+    <div class="option-toggles">
+      <label class="toggle-label" title="Har bir sahifa pastida raqamlarni ko'rsatish">
+        <input type="checkbox" id="opt-page-numbers" checked>
+        <span>Sahifa raqamlari</span>
+      </label>
+      <label class="toggle-label" title="Hujjat sarlavhasini tepada chiqarish">
+        <input type="checkbox" id="opt-header">
+        <span>Yuqori sarlavha</span>
+      </label>
+      <label class="toggle-label" title="Diagrammalarni SVG shaklida chizish">
+        <input type="checkbox" id="opt-mermaid" checked>
+        <span>Mermaid diagrammalari</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Main Workspace (Dual Pane) -->
+  <main class="app-workspace">
+    <!-- Left Pane: Editor -->
+    <section class="pane pane-editor">
+      <div class="pane-header">
+        <div class="pane-tabs">
+          <button class="tab-btn active" data-tab="editor">✍️ Muharrir</button>
+          <button class="tab-btn" data-tab="upload">📁 Fayl yuklash (.md)</button>
+        </div>
+        <div class="editor-stats">
+          <span id="stat-words">0 so'z</span>
+          <span class="stat-divider">•</span>
+          <span id="stat-chars">0 belgi</span>
+          <span class="stat-divider">•</span>
+          <span id="stat-lines">1 qator</span>
+        </div>
+      </div>
+
+      <!-- Tab Content 1: Direct Editor -->
+      <div id="tab-editor" class="tab-pane active">
+        <div class="editor-dropzone-wrapper">
+          <textarea id="markdown-input" spellcheck="false" placeholder="# Bu yerga Markdown matningizni yozing yoki tashlang...
+
+Misol:
+## Loyiha arxitekturasi
+- **Node.js** backend
+- **Puppeteer** PDF render
+
+```javascript
+console.log('Salom, Antigravity!');
+```
+
+```mermaid
+graph TD
+    A[Markdown matn] --> B(HTML ga o'tkazish)
+    B --> C{Puppeteer}
+    C -->|Render| D[A4 PDF fayl]
+```
+"></textarea>
+        </div>
+      </div>
+
+      <!-- Tab Content 2: File Upload Zone -->
+      <div id="tab-upload" class="tab-pane">
+        <div class="file-dropzone" id="file-dropzone">
+          <input type="file" id="file-input" accept=".md,.markdown,.txt" class="hidden-file-input">
+          <div class="dropzone-icon">📥</div>
+          <h3>Markdown faylingizni bu yerga tortib keling</h3>
+          <p>yoki kompyuterdan tanlash uchun bosing (.md, .markdown)</p>
+          <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('file-input').click()">
+            Kompyuterdan tanlash
+          </button>
+          <div id="upload-file-info" class="upload-file-info hidden">
+            <span class="file-info-icon">📄</span>
+            <span id="upload-filename">fayl.md</span>
+            <span id="upload-filesize">(0 KB)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resizer Divider -->
+    <div class="resizer" id="resizer"></div>
+
+    <!-- Right Pane: Live Preview -->
+    <section class="pane pane-preview">
+      <div class="pane-header">
+        <div class="pane-title">
+          <span class="preview-badge">Jonli Ko'rik (Live Preview)</span>
+        </div>
+        <div class="preview-actions">
+          <button id="btn-sync-scroll" class="icon-btn active" title="Sinxron skroll (On/Off)">📜</button>
+        </div>
+      </div>
+
+      <div class="preview-container" id="preview-container">
+        <div id="preview-content" class="markdown-body">
+          <!-- Rendered HTML will be injected here -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- History Modal -->
+  <div class="modal-overlay hidden" id="history-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📚 Yaratilgan PDF Fayllar Arxivi</h3>
+        <button class="modal-close" id="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-search">
+        <input type="text" id="history-search" placeholder="PDF nomi bo'yicha qidirish...">
+      </div>
+      <div class="modal-body" id="history-list">
+        <div class="loading-spinner-small">Yuklanmoqda...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay for PDF Generation -->
+  <div class="loading-overlay hidden" id="loading-overlay">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <h3 id="loading-title">PDF yaratilmoqda...</h3>
+      <p id="loading-desc">Chromium orqali sahifa chizilmoqda va diagrammalar render qilinmoqda. Biroz kuting...</p>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Libraries for Client-side live preview -->
+  <script src="/vendor/marked.min.js"></script>
+  <script>
+    if (typeof marked === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"><\\/script>');
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
