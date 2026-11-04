@@ -37,8 +37,8 @@
 
 ### 1. Loyihani yuklab olish va qaramliklarni o'rnatish
 ```bash
-git clone https://github.com/username/markdown-to-pdf.git
-cd markdown-to-pdf
+git clone https://github.com/xbbdev/markdown-formatter.git
+cd markdown-formatter
 npm install
 ```
 
